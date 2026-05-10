@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Amazon Ecommerce Mid-Semester Demo</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; background: #f6f7fb; color: #1f2937; }
+    header { background: #111827; color: white; padding: 24px 36px; }
+    main { padding: 24px 36px; }
+    .metrics { display: grid; grid-template-columns: repeat(5, minmax(140px, 1fr)); gap: 12px; margin-bottom: 24px; }
+    .metric, section { background: white; border: 1px solid #d8dee9; border-radius: 6px; padding: 16px; }
+    .metric strong { display: block; font-size: 22px; margin-top: 6px; }
+    section { margin-bottom: 18px; }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    th, td { border-bottom: 1px solid #e5e7eb; padding: 8px 10px; text-align: left; }
+    th { background: #f3f4f6; }
+    .passed { color: #047857; font-weight: bold; }
+    .failed { color: #b91c1c; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Amazon Ecommerce Mid-Semester Demo</h1>
+    <p>CSV files to SQLite warehouse to dashboard and quality report.</p>
+  </header>
+  <main>
+    <div class="metrics">
+      <div class="metric">Paid Revenue<strong>$1,169,099.63</strong></div>
+      <div class="metric">Orders<strong>30,000</strong></div>
+      <div class="metric">Sessions<strong>74,975</strong></div>
+      <div class="metric">Converted Sessions<strong>4,455</strong></div>
+      <div class="metric">Avg Review Rating<strong>3.85</strong></div>
+    </div>
+    <section><h2>Quality Status</h2><p class="passed">9/9 checks passed</p></section>
+    <section><h2>Top Revenue Categories</h2><table><thead><tr><th>category</th><th>orders</th><th>revenue</th></tr></thead><tbody><tr><td>Grocery</td><td>3794</td><td>180733.84</td></tr><tr><td>Home & Kitchen</td><td>3874</td><td>177495.01</td></tr><tr><td>Electronics</td><td>3835</td><td>176115.47</td></tr><tr><td>Toys</td><td>3842</td><td>169473.47</td></tr><tr><td>Sports</td><td>3693</td><td>165220.62</td></tr><tr><td>Books</td><td>3697</td><td>162245.29</td></tr><tr><td>Beauty</td><td>3692</td><td>161385.64</td></tr><tr><td>Fashion</td><td>3573</td><td>158414.02</td></tr></tbody></table></section>
+    <section><h2>Conversion Funnel</h2><table><thead><tr><th>event_type</th><th>events</th><th>sessions</th></tr></thead><tbody><tr><td>page_view</td><td>21023</td><td>21023</td></tr><tr><td>product_view</td><td>18809</td><td>18809</td></tr><tr><td>search</td><td>12663</td><td>12663</td></tr><tr><td>add_to_cart</td><td>9069</td><td>9069</td></tr><tr><td>checkout_start</td><td>5981</td><td>5981</td></tr><tr><td>purchase_click</td><td>4455</td><td>4455</td></tr><tr><td>remove_from_cart</td><td>3000</td><td>3000</td></tr></tbody></table></section>
+    <section><h2>Shipping / Late Arrival View</h2><table><thead><tr><th>shipping_status</th><th>orders</th><th>avg_arrival_lag_hours</th></tr></thead><tbody><tr><td>delivered</td><td>21495</td><td>8.8</td></tr><tr><td>in_transit</td><td>3528</td><td>8.68</td></tr><tr><td>delayed</td><td>2190</td><td>9.06</td></tr><tr><td>returned</td><td>1558</td><td>8.68</td></tr><tr><td>cancelled</td><td>1229</td><td>8.32</td></tr></tbody></table></section>
+    <section><h2>Review Satisfaction by Category</h2><table><thead><tr><th>category</th><th>avg_rating</th><th>avg_sentiment</th></tr></thead><tbody><tr><td>Home & Kitchen</td><td>3.86</td><td>0.445</td></tr><tr><td>Fashion</td><td>3.86</td><td>0.432</td></tr><tr><td>Sports</td><td>3.85</td><td>0.443</td></tr><tr><td>Books</td><td>3.85</td><td>0.443</td></tr><tr><td>Toys</td><td>3.84</td><td>0.437</td></tr><tr><td>Grocery</td><td>3.84</td><td>0.441</td></tr><tr><td>Electronics</td><td>3.84</td><td>0.432</td></tr><tr><td>Beauty</td><td>3.84</td><td>0.444</td></tr></tbody></table></section>
+  </main>
+</body>
+</html>

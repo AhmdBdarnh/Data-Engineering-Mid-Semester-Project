@@ -1,0 +1,8 @@
+.idea/
+.venv/
+__pycache__/
+*.pyc
+
+# Generated demo output. The script recreates these.
+midsemester_demo/demo_outputs/*.sqlite
+midsemester_demo/demo_outputs/*.sqlite-*

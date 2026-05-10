@@ -1,0 +1,54 @@
+{
+  "summary": {
+    "checks": 9,
+    "passed": 9,
+    "failed": 0
+  },
+  "checks": [
+    {
+      "check": "orders_not_empty",
+      "status": "passed",
+      "details": "orders exist"
+    },
+    {
+      "check": "events_not_empty",
+      "status": "passed",
+      "details": "events exist"
+    },
+    {
+      "check": "reviews_not_empty",
+      "status": "passed",
+      "details": "reviews exist"
+    },
+    {
+      "check": "product_catalog_expected_rows",
+      "status": "passed",
+      "details": "rows=12000"
+    },
+    {
+      "check": "orders_required_keys_not_null",
+      "status": "passed",
+      "details": "no missing order keys"
+    },
+    {
+      "check": "orders_total_amount_non_negative",
+      "status": "passed",
+      "details": "no negative order totals"
+    },
+    {
+      "check": "late_arrivals_within_48_hours",
+      "status": "passed",
+      "details": "all late arrivals within 48 hours"
+    },
+    {
+      "check": "one_current_scd_row_per_product",
+      "status": "passed",
+      "details": "one current pricing row per product"
+    },
+    {
+      "check": "review_rating_between_1_and_5",
+      "status": "passed",
+      "details": "ratings are valid"
+    }
+  ]
+}
