@@ -11,6 +11,7 @@ RUN apt-get update -q && \
 ENV ICEBERG_VERSION=1.5.2
 ENV HADOOP_AWS_VERSION=3.3.4
 ENV AWS_SDK_VERSION=1.12.262
+ENV KAFKA_CONNECTOR_VERSION=3.5.1
 
 # ── Download JARs into the Spark jars directory ───────────────────────────────
 # 1. Iceberg Spark runtime (catalog + table format)
@@ -28,6 +29,19 @@ RUN curl --retry 5 -Lo /opt/spark/jars/hadoop-aws-${HADOOP_AWS_VERSION}.jar \
 # 4. AWS SDK v1 bundle (required by hadoop-aws for S3A)
 RUN curl --retry 5 -Lo /opt/spark/jars/aws-java-sdk-bundle-${AWS_SDK_VERSION}.jar \
     "https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-bundle/${AWS_SDK_VERSION}/aws-java-sdk-bundle-${AWS_SDK_VERSION}.jar"
+
+# 5. Spark-Kafka connector (Structured Streaming source/sink)
+RUN curl --retry 5 -Lo /opt/spark/jars/spark-sql-kafka-0-10_2.12-${KAFKA_CONNECTOR_VERSION}.jar \
+    "https://repo1.maven.org/maven2/org/apache/spark/spark-sql-kafka-0-10_2.12/${KAFKA_CONNECTOR_VERSION}/spark-sql-kafka-0-10_2.12-${KAFKA_CONNECTOR_VERSION}.jar"
+
+RUN curl --retry 5 -Lo /opt/spark/jars/kafka-clients-3.4.1.jar \
+    "https://repo1.maven.org/maven2/org/apache/kafka/kafka-clients/3.4.1/kafka-clients-3.4.1.jar"
+
+RUN curl --retry 5 -Lo /opt/spark/jars/spark-token-provider-kafka-0-10_2.12-${KAFKA_CONNECTOR_VERSION}.jar \
+    "https://repo1.maven.org/maven2/org/apache/spark/spark-token-provider-kafka-0-10_2.12/${KAFKA_CONNECTOR_VERSION}/spark-token-provider-kafka-0-10_2.12-${KAFKA_CONNECTOR_VERSION}.jar"
+
+RUN curl --retry 5 -Lo /opt/spark/jars/commons-pool2-2.11.1.jar \
+    "https://repo1.maven.org/maven2/org/apache/commons/commons-pool2/2.11.1/commons-pool2-2.11.1.jar"
 
 # ── Configuration ─────────────────────────────────────────────────────────────
 COPY spark-defaults.conf /opt/spark/conf/spark-defaults.conf

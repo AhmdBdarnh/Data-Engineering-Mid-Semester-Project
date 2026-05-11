@@ -1,0 +1,61 @@
+services:
+
+  # ── Zookeeper (Kafka coordinator) ─────────────────────────────────────────
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    container_name: zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - lakehouse
+
+  # ── Kafka Broker ──────────────────────────────────────────────────────────
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"     # accessible from host for debugging
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_LOG_RETENTION_HOURS: 24
+    healthcheck:
+      test: ["CMD", "kafka-topics", "--list", "--bootstrap-server", "localhost:9092"]
+      interval: 10s
+      timeout: 10s
+      retries: 15
+    networks:
+      - lakehouse
+
+  # ── Python Event Producer ─────────────────────────────────────────────────
+  # Reads the user-activity CSV and streams events into the user_events topic.
+  # Runs once (LOOP=false) then exits — Spark Structured Streaming reads from
+  # the retained messages.  Set LOOP=true to simulate a continuous stream.
+  producer:
+    build: ./producer
+    container_name: kafka-producer
+    depends_on:
+      kafka:
+        condition: service_healthy
+    volumes:
+      - ../:/project_data   # CSV files available at /project_data
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      KAFKA_TOPIC: user_events
+      DATA_FILE: /project_data/amazon_user_activity_streaming_events.csv
+      DELAY_MS: "10"        # 10 ms between events ≈ 100 events/sec
+      LOOP: "false"
+    networks:
+      - lakehouse
+
+# ── Attach to the existing lakehouse network (created by processing stack) ──
+networks:
+  lakehouse:
+    external: true
+    name: lakehouse

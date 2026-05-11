@@ -2,6 +2,7 @@ x-spark-common: &spark-common
   build: ./spark
   volumes:
     - ./jobs:/jobs        # job scripts available at /jobs inside every container
+    - ../:/project_data   # project root CSVs available at /project_data
   networks:
     - lakehouse
   environment:
