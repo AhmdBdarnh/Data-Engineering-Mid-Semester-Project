@@ -45,7 +45,7 @@ def get_spark():
 
 # ── Check helpers ──────────────────────────────────────────────────────────────
 
-_results: list[tuple[str, bool, str]] = []   # (check_id, passed, detail)
+_results = []   # list of (check_id, passed, detail)
 
 
 def check(check_id: str, passed: bool, detail: str = ""):
