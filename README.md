@@ -2,6 +2,41 @@
 
 End-to-end data engineering pipeline built with **Apache Spark**, **Apache Iceberg**, **MinIO**, **Apache Kafka**, and **Apache Airflow**.
 
+## Prerequisites
+
+- **Docker Desktop** with Compose v2 installed and running
+- **8 GB+ RAM** allocated to Docker
+- Ports free: `7077`, `8080–8082`, `8085`, `8181`, `9000–9001`, `29092`
+
+---
+
+## Quickstart — One Command
+
+**Linux / Mac / WSL:**
+```bash
+bash start.sh
+```
+
+**Windows (PowerShell):**
+```powershell
+.\start.ps1
+```
+
+This single script starts all three stacks in the correct order, waits for each to be healthy, runs the full pipeline (Bronze → Silver → Gold → Data Quality → Dashboard), and prints all URLs when done.
+
+**First run takes ~10–15 minutes** (downloads Spark base image + Iceberg JARs). Subsequent runs start in under a minute.
+
+### After the script finishes, open:
+
+| Service | URL | Credentials |
+|---|---|---|
+| Airflow (DAGs) | http://localhost:8085 | admin / admin |
+| Spark Master UI | http://localhost:8080 | — |
+| MinIO Console | http://localhost:9001 | minioadmin / minioadmin |
+| Business Dashboard | `processing/jobs/dashboard.html` | open in browser |
+
+---
+
 ## Architecture
 
 Three independent Docker Compose stacks share a single Docker bridge network (`lakehouse`):
@@ -16,15 +51,7 @@ See [`docs/architecture.md`](docs/architecture.md) for diagrams and [`docs/data_
 
 ---
 
-## Prerequisites
-
-- **Docker Desktop** (with Compose v2)
-- **8 GB+ RAM** allocated to Docker
-- Ports free: `7077`, `8080–8082`, `8085`, `8181`, `9000–9001`, `29092`
-
----
-
-## Quick Start
+## Manual Setup (step by step)
 
 ### Step 1 — Start the processing stack
 
