@@ -84,5 +84,12 @@ with DAG(
         execution_timeout=timedelta(minutes=15),
     )
 
+    # ── 5. Build HTML business dashboard from Gold layer ─────────────────────
+    build_dashboard = BashOperator(
+        task_id="build_dashboard",
+        bash_command=f"{SPARK_SUBMIT} /jobs/build_dashboard.py",
+        execution_timeout=timedelta(minutes=10),
+    )
+
     # ── Task dependencies ────────────────────────────────────────────────────
-    bronze_ingestion >> silver_dimensions >> gold_facts >> data_quality
+    bronze_ingestion >> silver_dimensions >> gold_facts >> data_quality >> build_dashboard

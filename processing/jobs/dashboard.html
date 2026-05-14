@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Amazon Marketplace — Business Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body   { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f8; color: #1f2937; }
+header {
+  background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%);
+  color: white; padding: 20px 36px;
+  display: flex; justify-content: space-between; align-items: center;
+}
+header h1 { font-size: 22px; font-weight: 700; }
+header p  { font-size: 13px; opacity: .8; margin-top: 4px; }
+.badge { font-size: 12px; padding: 6px 14px; border-radius: 20px; font-weight: 600; }
+main { padding: 24px 36px; }
+
+.kpis { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; margin-bottom: 20px; }
+.kpi  {
+  background: white; border-radius: 10px; padding: 18px 20px;
+  box-shadow: 0 1px 4px rgba(0,0,0,.08); border-top: 3px solid #2563eb;
+}
+.kpi .label { font-size: 11px; color: #6b7280; text-transform: uppercase; letter-spacing: .5px; }
+.kpi .value { font-size: 26px; font-weight: 700; color: #1e3a5f; margin-top: 6px; }
+.kpi .sub   { font-size: 11px; color: #9ca3af; margin-top: 3px; }
+.kpi.green  { border-top-color: #10b981; }
+.kpi.green .value { color: #059669; }
+.kpi.amber  { border-top-color: #f59e0b; }
+.kpi.amber .value { color: #d97706; }
+.kpi.purple { border-top-color: #8b5cf6; }
+.kpi.purple .value { color: #7c3aed; }
+
+.row2 { display: grid; grid-template-columns: 3fr 2fr; gap: 14px; margin-bottom: 20px; }
+.row3 { display: grid; grid-template-columns: 2fr 1.4fr 1.4fr; gap: 14px; margin-bottom: 20px; }
+.card {
+  background: white; border-radius: 10px; padding: 20px;
+  box-shadow: 0 1px 4px rgba(0,0,0,.08);
+}
+.card h2 { font-size: 14px; font-weight: 600; color: #374151; margin-bottom: 16px; }
+
+.donut-wrap   { position: relative; width: 100%; max-width: 180px; margin: 8px auto 0; }
+.donut-center {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -42%); text-align: center; pointer-events: none;
+}
+.donut-center .big { font-size: 22px; font-weight: 700; color: #f59e0b; }
+.donut-center .sm  { font-size: 11px; color: #6b7280; }
+
+.sat-card { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+.stars    { font-size: 28px; color: #f59e0b; letter-spacing: 3px; margin: 10px 0 4px; }
+.rnum     { font-size: 38px; font-weight: 700; color: #1e3a5f; margin-top: 12px; }
+.rsub     { font-size: 12px; color: #9ca3af; margin-top: 6px; }
+
+.quality {
+  background: white; border-radius: 10px; padding: 14px 22px;
+  box-shadow: 0 1px 4px rgba(0,0,0,.08);
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+}
+.quality h2 { font-size: 13px; font-weight: 600; color: #374151; margin-right: 4px; white-space: nowrap; }
+.chip       { font-size: 11px; padding: 3px 9px; border-radius: 10px; background: #d1fae5; color: #065f46; }
+.chip.fail  { background: #fee2e2; color: #991b1b; }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>Amazon Marketplace — Business Dashboard</h1>
+    <p>Powered by Apache Iceberg &bull; Gold layer &bull; Apache Spark &bull; MinIO</p>
+  </div>
+  <span class="badge" style="background:#d1fae5;color:#065f46;">10/10 quality checks passed</span>
+</header>
+
+<main>
+
+  <div class="kpis">
+    <div class="kpi">
+      <div class="label">Total Revenue</div>
+      <div class="value">$1.17M</div>
+      <div class="sub">paid orders only</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Total Orders</div>
+      <div class="value">30,000</div>
+      <div class="sub">all payment statuses</div>
+    </div>
+    <div class="kpi green">
+      <div class="label">Conversion Rate</div>
+      <div class="value">5.9%</div>
+      <div class="sub">4,455 of 74,975 sessions</div>
+    </div>
+    <div class="kpi amber">
+      <div class="label">Late Deliveries</div>
+      <div class="value">2,190</div>
+      <div class="sub">7.3% of all orders</div>
+    </div>
+    <div class="kpi purple">
+      <div class="label">Avg Rating</div>
+      <div class="value">3.85/5</div>
+      <div class="sub">across all reviews</div>
+    </div>
+  </div>
+
+  <div class="row2">
+    <div class="card">
+      <h2>Monthly Revenue Trend</h2>
+      <canvas id="trendChart" height="85"></canvas>
+    </div>
+    <div class="card">
+      <h2>Top Categories by Revenue</h2>
+      <canvas id="catChart" height="165"></canvas>
+    </div>
+  </div>
+
+  <div class="row3">
+    <div class="card">
+      <h2>Conversion Funnel</h2>
+      <canvas id="funnelChart" height="105"></canvas>
+    </div>
+    <div class="card">
+      <h2>Delivery Performance</h2>
+      <div class="donut-wrap">
+        <canvas id="donutChart"></canvas>
+        <div class="donut-center">
+          <div class="big">7.3%</div>
+          <div class="sm">late delivery rate</div>
+        </div>
+      </div>
+    </div>
+    <div class="card sat-card">
+      <h2 style="align-self:flex-start;">Customer Satisfaction</h2>
+      <div class="rnum">3.85</div>
+      <div class="stars">★★★★☆</div>
+      <div class="rsub">Average rating: 3.85 / 5<br>Based on product reviews</div>
+    </div>
+  </div>
+
+  <div class="quality">
+    <h2>Data Quality &mdash;</h2>
+    <span class="chip">orders not empty</span><span class="chip">sessions not empty</span><span class="chip">no null order ids</span><span class="chip">unit price positive</span><span class="chip">late arrivals flagged</span><span class="chip">no dup products</span><span class="chip">scd one current row</span><span class="chip">no negative prices</span><span class="chip">conversion binary</span><span class="chip">summary dates not null</span>
+  </div>
+
+</main>
+
+<script>
+const trendMonths  = ["2025-10", "2025-11", "2025-12", "2026-01", "2026-02", "2026-03"];
+const trendRevenue = [229649.99, 227163.23, 225849.13, 229800.32, 198960.85, 239659.84];
+const catLabels    = ["Grocery", "Home & Kitchen", "Electronics", "Toys", "Sports", "Books"];
+const catRevenue   = [180733.84, 177495.01, 176115.47, 169473.47, 165220.62, 162245.29];
+const funnelLabels = ["Product Views", "Add to Cart", "Purchase Clicks"];
+const funnelPcts   = [100.0, 48.2, 23.7];
+const funnelCounts = [18809, 9069, 4455];
+const lateRate     = 7.3;
+
+new Chart(document.getElementById('trendChart'), {
+  type: 'line',
+  data: {
+    labels: trendMonths,
+    datasets: [{
+      data: trendRevenue,
+      borderColor: '#2563eb', backgroundColor: 'rgba(37,99,235,0.08)',
+      borderWidth: 2.5, pointRadius: 4, pointBackgroundColor: '#2563eb',
+      fill: true, tension: 0.4
+    }]
+  },
+  options: {
+    plugins: { legend: { display: false } },
+    scales: {
+      y: { ticks: { callback: v => '$' + (v/1000).toFixed(0) + 'K' }, grid: { color: '#f3f4f6' } },
+      x: { grid: { display: false } }
+    }
+  }
+});
+
+new Chart(document.getElementById('catChart'), {
+  type: 'bar',
+  data: {
+    labels: catLabels,
+    datasets: [{
+      data: catRevenue,
+      backgroundColor: ['#1e3a5f','#2563eb','#3b82f6','#60a5fa','#93c5fd','#bfdbfe'],
+      borderRadius: 4
+    }]
+  },
+  options: {
+    indexAxis: 'y',
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { ticks: { callback: v => '$' + (v/1000).toFixed(0) + 'K' }, grid: { color: '#f3f4f6' } },
+      y: { grid: { display: false } }
+    }
+  }
+});
+
+new Chart(document.getElementById('funnelChart'), {
+  type: 'bar',
+  data: {
+    labels: funnelLabels,
+    datasets: [{
+      data: funnelPcts,
+      backgroundColor: ['#2563eb','#3b82f6','#10b981'],
+      borderRadius: 4
+    }]
+  },
+  options: {
+    indexAxis: 'y',
+    plugins: {
+      legend: { display: false },
+      tooltip: { callbacks: { label: ctx => ' ' + funnelPcts[ctx.dataIndex] + '%  (' + funnelCounts[ctx.dataIndex].toLocaleString() + ' events)' } }
+    },
+    scales: {
+      x: { max: 100, ticks: { callback: v => v + '%' }, grid: { color: '#f3f4f6' } },
+      y: { grid: { display: false } }
+    }
+  }
+});
+
+new Chart(document.getElementById('donutChart'), {
+  type: 'doughnut',
+  data: {
+    datasets: [{ data: [lateRate, 100 - lateRate], backgroundColor: ['#f59e0b','#e5e7eb'], borderWidth: 0 }]
+  },
+  options: { cutout: '72%', plugins: { legend: { display: false }, tooltip: { enabled: false } } }
+});
+
+</script>
+
+</body>
+</html>
