@@ -2,7 +2,13 @@
   "permissions": {
     "allow": [
       "Bash(python3 *)",
-      "Bash(docker pull *)"
+      "Bash(docker pull *)",
+      "Bash(docker --version)",
+      "Bash(docker compose *)",
+      "Bash(docker exec spark-master *)",
+      "Bash(docker exec *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)"
     ]
   }
 }
