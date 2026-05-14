@@ -20,7 +20,7 @@ See [`docs/architecture.md`](docs/architecture.md) for diagrams and [`docs/data_
 
 - **Docker Desktop** (with Compose v2)
 - **8 GB+ RAM** allocated to Docker
-- Ports free: `7077`, `8080–8082`, `8085`, `8181`, `9000–9001`, `9092`
+- Ports free: `7077`, `8080–8082`, `8085`, `8181`, `9000–9001`, `29092`
 
 ---
 
@@ -97,12 +97,19 @@ docker exec spark-master /opt/spark/bin/spark-submit \
 docker exec spark-master /opt/spark/bin/spark-submit \
     --master spark://spark-master:7077 \
     /jobs/data_quality.py
+
+# Dashboard: generate HTML business dashboard from Gold layer
+docker exec spark-master /opt/spark/bin/spark-submit \
+    --master spark://spark-master:7077 \
+    /jobs/build_dashboard.py
 ```
+
+Then open `processing/jobs/dashboard.html` in your browser to view the business dashboard.
 
 ### Option B — Airflow DAGs (scheduled)
 
 1. Open http://localhost:8085 and log in as `admin` / `admin`
-2. Enable the **`batch_pipeline`** DAG — runs Bronze → Silver → Gold → Data Quality daily
+2. Enable the **`batch_pipeline`** DAG — runs Bronze → Silver → Gold → Data Quality → Dashboard daily
 3. Enable the **`streaming_pipeline`** DAG — starts the Kafka consumer and verifies rows hourly
 4. Trigger a manual run with the ▶ button on either DAG
 
@@ -193,6 +200,8 @@ cd ../orchestration && docker compose down -v
 │       ├── gold_facts.py         # Silver → Gold facts + aggregates
 │       ├── streaming_consumer.py # Kafka → Bronze (Structured Streaming)
 │       ├── data_quality.py       # Quality checks across all layers
+│       ├── build_dashboard.py    # Gold layer → HTML business dashboard
+│       ├── dashboard.html        # Generated dashboard (open in browser)
 │       ├── check_streaming.py    # Quick streaming table row count
 │       └── test_connection.py    # Connectivity smoke test
 ├── streaming/
