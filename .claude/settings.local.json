@@ -8,7 +8,8 @@
       "Bash(docker exec spark-master *)",
       "Bash(docker exec *)",
       "Bash(git add *)",
-      "Bash(git commit -m ' *)"
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)"
     ]
   }
 }

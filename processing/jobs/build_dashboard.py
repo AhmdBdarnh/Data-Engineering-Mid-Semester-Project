@@ -105,6 +105,37 @@ def main():
         ("Add to Cart",     "add_to_cart"),
         ("Purchase Clicks", "purchase_click"),
     ]
+    funnel_values = [fd.get(stage[1], 0) for stage in funnel_stages]
+    product_views, add_to_cart, purchase_clicks = funnel_values
+    view_to_cart_loss = round((1 - add_to_cart / product_views) * 100, 1) if product_views else 0
+    cart_to_purchase_loss = round((1 - purchase_clicks / add_to_cart) * 100, 1) if add_to_cart else 0
+    biggest_drop = (
+        "Product view to add-to-cart"
+        if view_to_cart_loss >= cart_to_purchase_loss
+        else "Add-to-cart to purchase click"
+    )
+    biggest_drop_rate = max(view_to_cart_loss, cart_to_purchase_loss)
+
+    channel_rows = spark.sql("""
+        SELECT
+            traffic_channel,
+            COUNT(*) AS sessions,
+            SUM(converted) AS converted,
+            ROUND(SUM(converted) * 100.0 / COUNT(*), 1) AS conversion_rate
+        FROM demo.gold.ml_session_conversion
+        WHERE traffic_channel IS NOT NULL
+        GROUP BY traffic_channel
+        HAVING sessions >= 100
+        ORDER BY conversion_rate DESC, sessions DESC
+        LIMIT 6
+    """).collect()
+
+    top_category = str(cat_rows[0]["category"]) if cat_rows else "N/A"
+    top_category_revenue = float(cat_rows[0]["revenue"] or 0) if cat_rows else 0
+    total_category_revenue = sum(float(r["revenue"] or 0) for r in cat_rows)
+    top_category_share = round(top_category_revenue / total_category_revenue * 100, 1) if total_category_revenue else 0
+    top_channel = str(channel_rows[0]["traffic_channel"]) if channel_rows else "N/A"
+    top_channel_rate = float(channel_rows[0]["conversion_rate"] or 0) if channel_rows else 0
 
     trend_months_js  = json.dumps([str(r["month"])    for r in trend_rows])
     trend_revenue_js = json.dumps([float(r["revenue"] or 0) for r in trend_rows])
@@ -113,6 +144,9 @@ def main():
     funnel_labels_js = json.dumps([s[0] for s in funnel_stages])
     funnel_pcts_js   = json.dumps([round(fd.get(s[1], 0) / base * 100, 1) for s in funnel_stages])
     funnel_counts_js = json.dumps([int(fd.get(s[1], 0)) for s in funnel_stages])
+    channel_labels_js = json.dumps([str(r["traffic_channel"]) for r in channel_rows])
+    channel_rates_js = json.dumps([float(r["conversion_rate"] or 0) for r in channel_rows])
+    channel_sessions_js = json.dumps([int(r["sessions"] or 0) for r in channel_rows])
 
     # ── Data quality summary from our DQ checks ───────────────────────────────
     dq_checks = [
@@ -142,14 +176,27 @@ def main():
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 body   { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f8; color: #1f2937; }
 header {
-  background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%);
-  color: white; padding: 20px 36px;
+  background: #17324d;
+  color: white; padding: 22px 36px;
   display: flex; justify-content: space-between; align-items: center;
+  gap: 24px;
 }
 header h1 { font-size: 22px; font-weight: 700; }
-header p  { font-size: 13px; opacity: .8; margin-top: 4px; }
-.badge { font-size: 12px; padding: 6px 14px; border-radius: 20px; font-weight: 600; }
+header p  { font-size: 13px; opacity: .82; margin-top: 4px; max-width: 820px; line-height: 1.45; }
+.badge { font-size: 12px; padding: 6px 14px; border-radius: 20px; font-weight: 600; white-space: nowrap; }
 main { padding: 24px 36px; }
+
+.answer {
+  display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 14px; margin-bottom: 20px;
+}
+.answer .card { border-top: 3px solid #10b981; }
+.answer .question {
+  font-size: 12px; color: #6b7280; text-transform: uppercase; letter-spacing: .4px;
+}
+.answer .statement {
+  font-size: 22px; line-height: 1.25; font-weight: 700; color: #17324d; margin-top: 8px;
+}
+.answer .detail { font-size: 12px; color: #6b7280; line-height: 1.45; margin-top: 8px; }
 
 .kpis { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; margin-bottom: 20px; }
 .kpi  {
@@ -167,13 +214,17 @@ main { padding: 24px 36px; }
 .kpi.purple .value { color: #7c3aed; }
 
 .row2 { display: grid; grid-template-columns: 3fr 2fr; gap: 14px; margin-bottom: 20px; }
-.row3 { display: grid; grid-template-columns: 2fr 1.4fr 1.4fr; gap: 14px; margin-bottom: 20px; }
+.row3 { display: grid; grid-template-columns: 2fr 2fr 1.2fr; gap: 14px; margin-bottom: 20px; }
 .card {
   background: white; border-radius: 10px; padding: 20px;
   box-shadow: 0 1px 4px rgba(0,0,0,.08);
 }
 .card h2 { font-size: 14px; font-weight: 600; color: #374151; margin-bottom: 16px; }
 
+.drop-card { display: flex; flex-direction: column; justify-content: center; }
+.drop-card .big { font-size: 34px; font-weight: 700; color: #d97706; }
+.drop-card .label { font-size: 13px; color: #374151; margin-top: 8px; line-height: 1.35; }
+.drop-card .sub { font-size: 12px; color: #6b7280; margin-top: 8px; line-height: 1.45; }
 .donut-wrap   { position: relative; width: 100%; max-width: 180px; margin: 8px auto 0; }
 .donut-center {
   position: absolute; top: 50%; left: 50%;
@@ -262,12 +313,23 @@ new Chart(document.getElementById('funnelChart'), {
   }
 });
 
-new Chart(document.getElementById('donutChart'), {
-  type: 'doughnut',
+new Chart(document.getElementById('channelChart'), {
+  type: 'bar',
   data: {
-    datasets: [{ data: [lateRate, 100 - lateRate], backgroundColor: ['#f59e0b','#e5e7eb'], borderWidth: 0 }]
+    labels: channelLabels,
+    datasets: [{ data: channelRates, backgroundColor: '#10b981', borderRadius: 4 }]
   },
-  options: { cutout: '72%', plugins: { legend: { display: false }, tooltip: { enabled: false } } }
+  options: {
+    indexAxis: 'y',
+    plugins: {
+      legend: { display: false },
+      tooltip: { callbacks: { label: ctx => ' ' + channelRates[ctx.dataIndex] + '% conversion  (' + channelSessions[ctx.dataIndex].toLocaleString() + ' sessions)' } }
+    },
+    scales: {
+      x: { max: 100, ticks: { callback: v => v + '%' }, grid: { color: '#f3f4f6' } },
+      y: { grid: { display: false } }
+    }
+  }
 });
 """
 
@@ -289,13 +351,31 @@ new Chart(document.getElementById('donutChart'), {
 
 <header>
   <div>
-    <h1>Amazon Marketplace — Business Dashboard</h1>
-    <p>Powered by Apache Iceberg &bull; Gold layer &bull; Apache Spark &bull; MinIO</p>
+    <h1>Revenue and Conversion Dashboard</h1>
+    <p>Business question: Which product categories drive revenue, and where should the marketplace improve the purchase journey to increase conversion?</p>
   </div>
   <span class="badge" style="{badge_style}">{badge_txt}</span>
 </header>
 
 <main>
+
+  <div class="answer">
+    <div class="card">
+      <div class="question">Dashboard answer</div>
+      <div class="statement">{top_category} is the strongest revenue category, while the largest conversion loss is {biggest_drop.lower()}.</div>
+      <div class="detail">The dashboard connects paid orders, category revenue, clickstream funnel behavior, and traffic-channel conversion to support one decision: where to focus growth effort.</div>
+    </div>
+    <div class="card">
+      <div class="question">Best category</div>
+      <div class="statement">{top_category}</div>
+      <div class="detail">${top_category_revenue:,.0f} revenue across the top category set, representing {top_category_share}% of the displayed category revenue.</div>
+    </div>
+    <div class="card">
+      <div class="question">Best channel</div>
+      <div class="statement">{top_channel}</div>
+      <div class="detail">{top_channel_rate}% session conversion rate among channels with meaningful traffic.</div>
+    </div>
+  </div>
 
   <div class="kpis">
     <div class="kpi">
@@ -314,9 +394,9 @@ new Chart(document.getElementById('donutChart'), {
       <div class="sub">{int(converted):,} of {sessions:,} sessions</div>
     </div>
     <div class="kpi amber">
-      <div class="label">Late Deliveries</div>
-      <div class="value">{late_count:,}</div>
-      <div class="sub">{late_rate}% of all orders</div>
+      <div class="label">Biggest Funnel Loss</div>
+      <div class="value">{biggest_drop_rate}%</div>
+      <div class="sub">{biggest_drop}</div>
     </div>
     <div class="kpi purple">
       <div class="label">Avg Rating</div>
@@ -327,35 +407,29 @@ new Chart(document.getElementById('donutChart'), {
 
   <div class="row2">
     <div class="card">
-      <h2>Monthly Revenue Trend</h2>
+      <h2>Revenue Trend: Is the business growing?</h2>
       <canvas id="trendChart" height="85"></canvas>
     </div>
     <div class="card">
-      <h2>Top Categories by Revenue</h2>
+      <h2>Category Revenue: Where is money made?</h2>
       <canvas id="catChart" height="165"></canvas>
     </div>
   </div>
 
   <div class="row3">
     <div class="card">
-      <h2>Conversion Funnel</h2>
+      <h2>Purchase Funnel: Where do users drop?</h2>
       <canvas id="funnelChart" height="105"></canvas>
     </div>
     <div class="card">
-      <h2>Delivery Performance</h2>
-      <div class="donut-wrap">
-        <canvas id="donutChart"></canvas>
-        <div class="donut-center">
-          <div class="big">{late_rate}%</div>
-          <div class="sm">late delivery rate</div>
-        </div>
-      </div>
+      <h2>Channel Conversion: Which traffic performs best?</h2>
+      <canvas id="channelChart" height="105"></canvas>
     </div>
-    <div class="card sat-card">
-      <h2 style="align-self:flex-start;">Customer Satisfaction</h2>
-      <div class="rnum">{avg_rating}</div>
-      <div class="stars">{stars}</div>
-      <div class="rsub">Average rating: {avg_rating} / 5<br>Based on product reviews</div>
+    <div class="card drop-card">
+      <h2>Action Point</h2>
+      <div class="big">{biggest_drop_rate}%</div>
+      <div class="label">{biggest_drop}</div>
+      <div class="sub">This is the largest measured drop in the journey, so it is the clearest place to investigate UX, pricing, promotions, or checkout friction.</div>
     </div>
   </div>
 
@@ -374,7 +448,9 @@ const catRevenue   = {cat_revenue_js};
 const funnelLabels = {funnel_labels_js};
 const funnelPcts   = {funnel_pcts_js};
 const funnelCounts = {funnel_counts_js};
-const lateRate     = {late_rate};
+const channelLabels = {channel_labels_js};
+const channelRates = {channel_rates_js};
+const channelSessions = {channel_sessions_js};
 {js_charts}
 </script>
 

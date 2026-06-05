@@ -8,16 +8,30 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 body   { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f8; color: #1f2937; }
 header {
-  background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%);
-  color: white; padding: 20px 36px;
+  background: #17324d;
+  color: white; padding: 22px 36px;
   display: flex; justify-content: space-between; align-items: center;
+  gap: 24px;
 }
 header h1 { font-size: 22px; font-weight: 700; }
-header p  { font-size: 13px; opacity: .8; margin-top: 4px; }
+header p  { font-size: 13px; opacity: .82; margin-top: 4px; max-width: 820px; line-height: 1.45; }
 .badge    {
   font-size: 12px; padding: 6px 14px; border-radius: 20px; font-weight: 600;
+  white-space: nowrap;
 }
 main { padding: 24px 36px; }
+
+.answer {
+  display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 14px; margin-bottom: 20px;
+}
+.answer .card { border-top: 3px solid #10b981; }
+.answer .question {
+  font-size: 12px; color: #6b7280; text-transform: uppercase; letter-spacing: .4px;
+}
+.answer .statement {
+  font-size: 22px; line-height: 1.25; font-weight: 700; color: #17324d; margin-top: 8px;
+}
+.answer .detail { font-size: 12px; color: #6b7280; line-height: 1.45; margin-top: 8px; }
 
 /* KPI row */
 .kpis { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; margin-bottom: 20px; }
@@ -37,7 +51,7 @@ main { padding: 24px 36px; }
 
 /* Chart layout */
 .row2 { display: grid; grid-template-columns: 3fr 2fr; gap: 14px; margin-bottom: 20px; }
-.row3 { display: grid; grid-template-columns: 2fr 1.4fr 1.4fr; gap: 14px; margin-bottom: 20px; }
+.row3 { display: grid; grid-template-columns: 2fr 2fr 1.2fr; gap: 14px; margin-bottom: 20px; }
 .card {
   background: white; border-radius: 10px; padding: 20px;
   box-shadow: 0 1px 4px rgba(0,0,0,.08);
@@ -45,6 +59,10 @@ main { padding: 24px 36px; }
 .card h2 { font-size: 14px; font-weight: 600; color: #374151; margin-bottom: 16px; }
 
 /* Delivery donut */
+.drop-card { display: flex; flex-direction: column; justify-content: center; }
+.drop-card .big { font-size: 34px; font-weight: 700; color: #d97706; }
+.drop-card .label { font-size: 13px; color: #374151; margin-top: 8px; line-height: 1.35; }
+.drop-card .sub { font-size: 12px; color: #6b7280; margin-top: 8px; line-height: 1.45; }
 .donut-wrap   { position: relative; width: 100%; max-width: 180px; margin: 8px auto 0; }
 .donut-center {
   position: absolute; top: 50%; left: 50%;
@@ -74,13 +92,31 @@ main { padding: 24px 36px; }
 
 <header>
   <div>
-    <h1>Amazon Marketplace Business Dashboard</h1>
-    <p>Sales performance &bull; User behavior &bull; Delivery issues &bull; Customer satisfaction</p>
+    <h1>Revenue and Conversion Dashboard</h1>
+    <p>Business question: Which product categories drive revenue, and where should the marketplace improve the purchase journey to increase conversion?</p>
   </div>
   <span class="badge" style="background:#d1fae5;color:#065f46;">9/9 quality checks passed</span>
 </header>
 
 <main>
+
+  <div class="answer">
+    <div class="card">
+      <div class="question">Dashboard answer</div>
+      <div class="statement">Grocery is the strongest revenue category, while the largest conversion loss is product view to add-to-cart.</div>
+      <div class="detail">The dashboard connects paid orders, category revenue, clickstream funnel behavior, and traffic-channel conversion to support one decision: where to focus growth effort.</div>
+    </div>
+    <div class="card">
+      <div class="question">Best category</div>
+      <div class="statement">Grocery</div>
+      <div class="detail">$180,734 revenue across the top category set, representing 17.5% of the displayed category revenue.</div>
+    </div>
+    <div class="card">
+      <div class="question">Best channel</div>
+      <div class="statement">affiliate</div>
+      <div class="detail">6.4% session conversion rate among channels with meaningful traffic.</div>
+    </div>
+  </div>
 
   <!-- KPI cards -->
   <div class="kpis">
@@ -100,9 +136,9 @@ main { padding: 24px 36px; }
       <div class="sub">4,455 of 74,975 sessions</div>
     </div>
     <div class="kpi amber">
-      <div class="label">Late Deliveries</div>
-      <div class="value">2,190</div>
-      <div class="sub">7.3% of all orders</div>
+      <div class="label">Biggest Funnel Loss</div>
+      <div class="value">51.8%</div>
+      <div class="sub">Product view to add-to-cart</div>
     </div>
     <div class="kpi purple">
       <div class="label">Average Rating</div>
@@ -114,11 +150,11 @@ main { padding: 24px 36px; }
   <!-- Row 2: trend + categories -->
   <div class="row2">
     <div class="card">
-      <h2>Revenue Trend</h2>
+      <h2>Revenue Trend: Is the business growing?</h2>
       <canvas id="trendChart" height="85"></canvas>
     </div>
     <div class="card">
-      <h2>Top Categories by Revenue</h2>
+      <h2>Category Revenue: Where is money made?</h2>
       <canvas id="catChart" height="165"></canvas>
     </div>
   </div>
@@ -126,24 +162,18 @@ main { padding: 24px 36px; }
   <!-- Row 3: funnel + delivery + satisfaction -->
   <div class="row3">
     <div class="card">
-      <h2>Conversion Funnel</h2>
+      <h2>Purchase Funnel: Where do users drop?</h2>
       <canvas id="funnelChart" height="105"></canvas>
     </div>
     <div class="card">
-      <h2>Delivery Performance</h2>
-      <div class="donut-wrap">
-        <canvas id="donutChart"></canvas>
-        <div class="donut-center">
-          <div class="big">7.3%</div>
-          <div class="sm">late delivery rate</div>
-        </div>
-      </div>
+      <h2>Channel Conversion: Which traffic performs best?</h2>
+      <canvas id="channelChart" height="105"></canvas>
     </div>
-    <div class="card sat-card">
-      <h2 style="align-self:flex-start;">Customer Satisfaction</h2>
-      <div class="rnum">3.85</div>
-      <div class="stars">★★★★☆</div>
-      <div class="rsub">Average rating: 3.85/5<br>Based on product reviews and ratings</div>
+    <div class="card drop-card">
+      <h2>Action Point</h2>
+      <div class="big">51.8%</div>
+      <div class="label">Product view to add-to-cart</div>
+      <div class="sub">This is the largest measured drop in the journey, so it is the clearest place to investigate UX, pricing, promotions, or checkout friction.</div>
     </div>
   </div>
 
@@ -163,7 +193,9 @@ const catRevenue   = [180733.84, 177495.01, 176115.47, 169473.47, 165220.62, 162
 const funnelLabels = ["Product Views", "Add to Cart", "Purchase Clicks"];
 const funnelPcts   = [100.0, 48.2, 23.7];
 const funnelCounts = [18809, 9069, 4455];
-const lateRate     = 7.3;
+const channelLabels = ["affiliate", "direct", "organic", "paid_search", "social", "email"];
+const channelRates = [6.4, 6.1, 6.0, 6.0, 5.9, 5.2];
+const channelSessions = [6707, 11141, 24185, 13509, 10461, 8997];
 
 new Chart(document.getElementById('trendChart'), {
   type: 'line',
@@ -246,18 +278,22 @@ new Chart(document.getElementById('funnelChart'), {
   }
 });
 
-new Chart(document.getElementById('donutChart'), {
-  type: 'doughnut',
+new Chart(document.getElementById('channelChart'), {
+  type: 'bar',
   data: {
-    datasets: [{
-      data: [lateRate, 100 - lateRate],
-      backgroundColor: ['#f59e0b', '#e5e7eb'],
-      borderWidth: 0
-    }]
+    labels: channelLabels,
+    datasets: [{ data: channelRates, backgroundColor: '#10b981', borderRadius: 4 }]
   },
   options: {
-    cutout: '72%',
-    plugins: { legend: { display: false }, tooltip: { enabled: false } }
+    indexAxis: 'y',
+    plugins: {
+      legend: { display: false },
+      tooltip: { callbacks: { label: ctx => ' ' + channelRates[ctx.dataIndex] + '% conversion  (' + channelSessions[ctx.dataIndex].toLocaleString() + ' sessions)' } }
+    },
+    scales: {
+      x: { max: 100, ticks: { callback: v => v + '%' }, grid: { color: '#f3f4f6' } },
+      y: { grid: { display: false } }
+    }
   }
 });
 
