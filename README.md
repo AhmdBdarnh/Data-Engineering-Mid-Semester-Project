@@ -34,6 +34,8 @@ This single script starts all three stacks in the correct order, waits for each 
 | Spark Master UI | http://localhost:8080 | — |
 | MinIO Console | http://localhost:9001 | minioadmin / minioadmin |
 | Business Dashboard | `processing/jobs/dashboard.html` | open in browser |
+| Great Expectations report | `processing/jobs/great_expectations_validation_result.json` | generated bonus artifact |
+| DataHub lineage JSON | `processing/jobs/datahub_lineage.json` | generated bonus artifact |
 
 ---
 
@@ -125,6 +127,16 @@ docker exec spark-master /opt/spark/bin/spark-submit \
     --master spark://spark-master:7077 \
     /jobs/data_quality.py
 
+# Bonus: Great Expectations-compatible validation report
+docker exec spark-master /opt/spark/bin/spark-submit \
+    --master spark://spark-master:7077 \
+    /jobs/great_expectations_validation.py
+
+# Bonus: DataHub lineage artifact / optional GMS emission
+docker exec spark-master /opt/spark/bin/spark-submit \
+    --master spark://spark-master:7077 \
+    /jobs/emit_datahub_lineage.py
+
 # Dashboard: generate HTML business dashboard from Gold layer
 docker exec spark-master /opt/spark/bin/spark-submit \
     --master spark://spark-master:7077 \
@@ -136,7 +148,7 @@ Then open `processing/jobs/dashboard.html` in your browser to view the business 
 ### Option B — Airflow DAGs (scheduled)
 
 1. Open http://localhost:8085 and log in as `admin` / `admin`
-2. Enable the **`batch_pipeline`** DAG — runs Bronze → Silver → Gold → Data Quality → Dashboard daily
+2. Enable the **`batch_pipeline`** DAG — runs Bronze → Silver → Gold → Data Quality → Bonus validation/lineage → Dashboard daily
 3. Enable the **`streaming_pipeline`** DAG — starts the Kafka consumer and verifies rows hourly
 4. Trigger a manual run with the ▶ button on either DAG
 
@@ -157,6 +169,54 @@ docker exec spark-master /opt/spark/bin/spark-submit \
     --master spark://spark-master:7077 \
     /jobs/check_streaming.py
 ```
+
+---
+
+## Data Quality Checks
+
+`processing/jobs/data_quality.py` runs after the Gold build in the Airflow batch DAG and validates all three layers:
+
+| Layer | Checks |
+|---|---|
+| Bronze | Tables are non-empty; primary keys are not null for orders, products, pricing, reviews, and user events |
+| Silver | No duplicate products; SCD pricing has one current row per product; no negative list prices |
+| Gold | Fact orders are non-empty with valid prices; late orders over 48 hours are flagged; user event IDs are not null; summary dates are not null; ML conversion labels are binary |
+
+## Bonus Components
+
+### Great Expectations
+
+`processing/jobs/great_expectations_validation.py` writes two Great Expectations-compatible artifacts:
+
+| Artifact | Purpose |
+|---|---|
+| `processing/jobs/great_expectations_suite.json` | Expectation suite for key Bronze, Silver, and Gold tables |
+| `processing/jobs/great_expectations_validation_result.json` | Validation result with pass/fail statistics |
+
+The job fails if any bonus expectation fails, so the Airflow DAG and startup script stop before the dashboard when validation is not clean.
+
+### DataHub Lineage
+
+`processing/jobs/emit_datahub_lineage.py` writes:
+
+```text
+processing/jobs/datahub_lineage.json
+```
+
+This file documents dataset schemas, row counts, and job-level lineage:
+
+```text
+CSV/Kafka -> Bronze -> Silver -> Gold
+```
+
+If a DataHub GMS server is available, set `DATAHUB_GMS_URL` before starting the processing stack and the job will also emit Metadata Change Proposals:
+
+```bash
+export DATAHUB_GMS_URL=http://datahub-gms:8080
+bash start.sh
+```
+
+Without `DATAHUB_GMS_URL`, the project still generates the local lineage JSON and the pipeline continues normally.
 
 ---
 
@@ -227,6 +287,8 @@ cd ../orchestration && docker compose down -v
 │       ├── gold_facts.py         # Silver → Gold facts + aggregates
 │       ├── streaming_consumer.py # Kafka → Bronze (Structured Streaming)
 │       ├── data_quality.py       # Quality checks across all layers
+│       ├── great_expectations_validation.py # Bonus validation artifacts
+│       ├── emit_datahub_lineage.py # Bonus lineage artifact / optional DataHub emission
 │       ├── build_dashboard.py    # Gold layer → HTML business dashboard
 │       ├── dashboard.html        # Generated dashboard (open in browser)
 │       ├── check_streaming.py    # Quick streaming table row count

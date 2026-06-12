@@ -9,6 +9,7 @@ x-spark-common: &spark-common
     PYSPARK_PYTHON: python3
     PYSPARK_DRIVER_PYTHON: python3
     AWS_REGION: us-east-1
+    DATAHUB_GMS_URL: ${DATAHUB_GMS_URL:-}
 
 services:
 

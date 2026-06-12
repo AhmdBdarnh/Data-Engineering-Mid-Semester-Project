@@ -84,7 +84,21 @@ with DAG(
         execution_timeout=timedelta(minutes=15),
     )
 
-    # ── 5. Build HTML business dashboard from Gold layer ─────────────────────
+    # ── 5. Bonus: Great Expectations-style validation report ─────────────────
+    great_expectations = BashOperator(
+        task_id="great_expectations_validation",
+        bash_command=f"{SPARK_SUBMIT} /jobs/great_expectations_validation.py",
+        execution_timeout=timedelta(minutes=15),
+    )
+
+    # ── 6. Bonus: DataHub lineage artifact / optional GMS emission ───────────
+    datahub_lineage = BashOperator(
+        task_id="emit_datahub_lineage",
+        bash_command=f"{SPARK_SUBMIT} /jobs/emit_datahub_lineage.py",
+        execution_timeout=timedelta(minutes=15),
+    )
+
+    # ── 7. Build HTML business dashboard from Gold layer ─────────────────────
     build_dashboard = BashOperator(
         task_id="build_dashboard",
         bash_command=f"{SPARK_SUBMIT} /jobs/build_dashboard.py",
@@ -92,4 +106,6 @@ with DAG(
     )
 
     # ── Task dependencies ────────────────────────────────────────────────────
-    bronze_ingestion >> silver_dimensions >> gold_facts >> data_quality >> build_dashboard
+    bronze_ingestion >> silver_dimensions >> gold_facts >> data_quality
+    data_quality >> great_expectations >> build_dashboard
+    data_quality >> datahub_lineage >> build_dashboard

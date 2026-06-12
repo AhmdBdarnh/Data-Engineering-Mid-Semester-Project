@@ -14,6 +14,30 @@ function Wait-Healthy($container) {
     Write-Host " ready"
 }
 
+function Invoke-SparkJob($Pattern, $Job) {
+    $output = docker exec spark-master /opt/spark/bin/spark-submit --master spark://spark-master:7077 $Job 2>&1
+    $exitCode = $LASTEXITCODE
+    $output | Select-String -Pattern $Pattern
+
+    if ($exitCode -ne 0) {
+        Write-Error "Spark job failed: $Job"
+        exit $exitCode
+    }
+}
+
+function Start-StreamingStack {
+    docker compose up -d --build
+    if ($LASTEXITCODE -eq 0) { return }
+
+    Write-Host "      Streaming stack start failed; waiting 25s for Kafka/Zookeeper cleanup, then retrying..."
+    Start-Sleep -Seconds 25
+    docker compose up -d --build
+    if ($LASTEXITCODE -ne 0) {
+        Write-Error "Streaming stack failed to start"
+        exit $LASTEXITCODE
+    }
+}
+
 Write-Host ""
 Write-Host "========================================"
 Write-Host "  Amazon Data Lakehouse - Starting Up"
@@ -32,7 +56,7 @@ Write-Host "      Processing stack ready" -ForegroundColor Green
 Write-Host ""
 Write-Host "[2/4] Starting streaming stack (Kafka + producer)..."
 Set-Location "$Root\streaming"
-docker compose up -d --build
+Start-StreamingStack
 Wait-Healthy "kafka"
 Write-Host "      Streaming stack ready" -ForegroundColor Green
 
@@ -46,22 +70,28 @@ Write-Host "      Orchestration stack ready" -ForegroundColor Green
 
 # Step 4: Run the pipeline
 Write-Host ""
-Write-Host "[4/4] Running the full pipeline (Bronze -> Silver -> Gold -> Quality -> Dashboard)..."
+Write-Host "[4/4] Running the full pipeline (Bronze -> Silver -> Gold -> Quality -> Bonus -> Dashboard)..."
 
 Write-Host "      Bronze ingestion..."
-docker exec spark-master /opt/spark/bin/spark-submit --master spark://spark-master:7077 /jobs/bronze_ingestion.py 2>&1 | Select-String -Pattern "✓|✗|ERROR"
+Invoke-SparkJob "✓|✗|ERROR" "/jobs/bronze_ingestion.py"
 
 Write-Host "      Silver dimensions..."
-docker exec spark-master /opt/spark/bin/spark-submit --master spark://spark-master:7077 /jobs/silver_dimensions.py 2>&1 | Select-String -Pattern "✓|✗|ERROR"
+Invoke-SparkJob "✓|✗|ERROR" "/jobs/silver_dimensions.py"
 
 Write-Host "      Gold facts..."
-docker exec spark-master /opt/spark/bin/spark-submit --master spark://spark-master:7077 /jobs/gold_facts.py 2>&1 | Select-String -Pattern "✓|✗|ERROR"
+Invoke-SparkJob "✓|✗|ERROR" "/jobs/gold_facts.py"
 
 Write-Host "      Data quality..."
-docker exec spark-master /opt/spark/bin/spark-submit --master spark://spark-master:7077 /jobs/data_quality.py 2>&1 | Select-String -Pattern "✓|✗|Results"
+Invoke-SparkJob "✓|✗|Results" "/jobs/data_quality.py"
+
+Write-Host "      Great Expectations bonus validation..."
+Invoke-SparkJob "✓|✗|Results|Suite|Validation" "/jobs/great_expectations_validation.py"
+
+Write-Host "      DataHub lineage bonus..."
+Invoke-SparkJob "Lineage|Jobs|Tables|MCPs|WARNING" "/jobs/emit_datahub_lineage.py"
 
 Write-Host "      Building dashboard..."
-docker exec spark-master /opt/spark/bin/spark-submit --master spark://spark-master:7077 /jobs/build_dashboard.py 2>&1 | Select-String -Pattern "✓|Revenue|Orders"
+Invoke-SparkJob "✓|Revenue|Orders" "/jobs/build_dashboard.py"
 
 Write-Host ""
 Write-Host "========================================"
@@ -73,4 +103,6 @@ Write-Host "  * Airflow UI : http://localhost:8085  (admin / admin)"
 Write-Host "  * Spark UI   : http://localhost:8080"
 Write-Host "  * MinIO      : http://localhost:9001  (minioadmin / minioadmin)"
 Write-Host "  * Dashboard  : processing\jobs\dashboard.html"
+Write-Host "  * GE report  : processing\jobs\great_expectations_validation_result.json"
+Write-Host "  * DataHub JSON: processing\jobs\datahub_lineage.json"
 Write-Host ""

@@ -35,6 +35,7 @@ from pyspark.sql.types import (
 KAFKA_BOOTSTRAP = "kafka:9092"
 KAFKA_TOPIC     = "user_events"
 CHECKPOINT_DIR  = "s3a://warehouse/checkpoints/user_events_stream/"
+MAX_LATE_ARRIVAL_MINUTES = 48 * 60
 
 # Schema of each JSON message produced by producer.py
 EVENT_SCHEMA = StructType([
@@ -146,10 +147,14 @@ def main():
         )
     )
 
-    # ── Apply 48-hour watermark for late-arrival tolerance ───────────────────
-    # Spark will accept events up to 48 hours past their event_time before
-    # discarding state.  This satisfies the late-arriving data requirement.
-    watermarked = parsed.withWatermark("event_time", "48 hours")
+    # ── Apply 48-hour late-arrival policy ────────────────────────────────────
+    # Keep events that arrive within the allowed 48-hour tolerance, then use
+    # the watermark to bound duplicate-tracking state for out-of-order events.
+    accepted = parsed.filter(
+        col("ingestion_lag_minutes").isNull()
+        | (col("ingestion_lag_minutes") <= lit(MAX_LATE_ARRIVAL_MINUTES))
+    )
+    watermarked = accepted.withWatermark("event_time", "48 hours").dropDuplicates(["event_id"])
 
     # ── Write stream to Iceberg (append mode) ─────────────────────────────────
     query = (

@@ -1,0 +1,157 @@
+{
+  "success": true,
+  "run_time": "2026-06-12T15:59:29.586500+00:00",
+  "statistics": {
+    "evaluated_expectations": 10,
+    "successful_expectations": 10,
+    "unsuccessful_expectations": 0,
+    "success_percent": 100.0
+  },
+  "results": [
+    {
+      "success": true,
+      "expectation_config": {
+        "expectation_type": "expect_table_row_count_to_be_between",
+        "table": "demo.bronze.orders",
+        "kwargs": {
+          "min_value": 1
+        }
+      },
+      "result": {
+        "observed_value": 30000
+      }
+    },
+    {
+      "success": true,
+      "expectation_config": {
+        "expectation_type": "expect_column_values_to_not_be_null",
+        "table": "demo.bronze.orders",
+        "kwargs": {
+          "column": "order_id"
+        }
+      },
+      "result": {
+        "unexpected_count": 0
+      }
+    },
+    {
+      "success": true,
+      "expectation_config": {
+        "expectation_type": "expect_table_row_count_to_be_between",
+        "table": "demo.bronze.user_events",
+        "kwargs": {
+          "min_value": 1
+        }
+      },
+      "result": {
+        "observed_value": 75000
+      }
+    },
+    {
+      "success": true,
+      "expectation_config": {
+        "expectation_type": "expect_column_values_to_not_be_null",
+        "table": "demo.bronze.user_events",
+        "kwargs": {
+          "column": "event_id"
+        }
+      },
+      "result": {
+        "unexpected_count": 0
+      }
+    },
+    {
+      "success": true,
+      "expectation_config": {
+        "expectation_type": "expect_column_values_to_be_unique",
+        "table": "demo.silver.dim_product",
+        "kwargs": {
+          "column": "product_id"
+        }
+      },
+      "result": {
+        "duplicate_values": 0
+      }
+    },
+    {
+      "success": true,
+      "expectation_config": {
+        "expectation_type": "expect_column_values_to_be_between",
+        "table": "demo.silver.dim_product_pricing_scd",
+        "kwargs": {
+          "column": "list_price",
+          "min_value": 0
+        }
+      },
+      "result": {
+        "unexpected_count": 0
+      }
+    },
+    {
+      "success": true,
+      "expectation_config": {
+        "expectation_type": "expect_compound_columns_to_be_unique",
+        "table": "demo.silver.dim_product_pricing_scd",
+        "kwargs": {
+          "column_list": [
+            "product_id",
+            "is_current"
+          ],
+          "condition": "is_current = true"
+        }
+      },
+      "result": {
+        "duplicate_compound_values": 0
+      }
+    },
+    {
+      "success": true,
+      "expectation_config": {
+        "expectation_type": "expect_column_values_to_not_be_null",
+        "table": "demo.gold.fact_orders",
+        "kwargs": {
+          "column": "order_id"
+        }
+      },
+      "result": {
+        "unexpected_count": 0
+      }
+    },
+    {
+      "success": true,
+      "expectation_config": {
+        "expectation_type": "expect_column_values_to_be_between",
+        "table": "demo.gold.fact_orders",
+        "kwargs": {
+          "column": "unit_price",
+          "min_value": 0,
+          "strict_min": true
+        }
+      },
+      "result": {
+        "unexpected_count": 0
+      }
+    },
+    {
+      "success": true,
+      "expectation_config": {
+        "expectation_type": "expect_column_values_to_be_in_set",
+        "table": "demo.gold.ml_session_conversion",
+        "kwargs": {
+          "column": "converted",
+          "value_set": [
+            0,
+            1
+          ]
+        }
+      },
+      "result": {
+        "unexpected_count": 0
+      }
+    }
+  ],
+  "meta": {
+    "expectation_suite_name": "amazon_lakehouse_suite",
+    "suite_path": "/jobs/great_expectations_suite.json"
+  }
+}

@@ -10,6 +10,32 @@ NC='\033[0m'
 
 ROOT="$(cd "$(dirname "$0")" && pwd)"
 
+run_spark_job() {
+    local pattern="$1"
+    local job="$2"
+
+    set +e
+    docker exec spark-master /opt/spark/bin/spark-submit \
+        --master spark://spark-master:7077 "$job" 2>&1 | grep -E "$pattern"
+    local spark_status=${PIPESTATUS[0]}
+    set -e
+
+    if [ "$spark_status" -ne 0 ]; then
+        echo "      ERROR: Spark job failed: $job" >&2
+        exit "$spark_status"
+    fi
+}
+
+start_streaming_stack() {
+    if docker compose up -d --build; then
+        return 0
+    fi
+
+    echo "      Streaming stack start failed; waiting 25s for Kafka/Zookeeper cleanup, then retrying..."
+    sleep 25
+    docker compose up -d --build
+}
+
 echo ""
 echo "========================================"
 echo "  Amazon Data Lakehouse — Starting Up"
@@ -30,7 +56,7 @@ echo -e "${GREEN}      ✓ Processing stack ready${NC}"
 echo ""
 echo -e "${YELLOW}[2/4] Starting streaming stack (Kafka + producer)...${NC}"
 cd "$ROOT/streaming"
-docker compose up -d --build
+start_streaming_stack
 
 echo "      Waiting for Kafka to be healthy..."
 until docker inspect kafka --format='{{.State.Health.Status}}' 2>/dev/null | grep -q "healthy"; do sleep 3; done
@@ -48,27 +74,28 @@ echo -e "${GREEN}      ✓ Orchestration stack ready${NC}"
 
 # ── Step 4: Run the full pipeline once ───────────────────────────────────────
 echo ""
-echo -e "${YELLOW}[4/4] Running the full pipeline (Bronze → Silver → Gold → Quality → Dashboard)...${NC}"
+echo -e "${YELLOW}[4/4] Running the full pipeline (Bronze → Silver → Gold → Quality → Bonus → Dashboard)...${NC}"
 
 echo "      Bronze ingestion..."
-docker exec spark-master /opt/spark/bin/spark-submit \
-    --master spark://spark-master:7077 /jobs/bronze_ingestion.py 2>&1 | grep -E "✓|✗|ERROR" || true
+run_spark_job "✓|✗|ERROR" /jobs/bronze_ingestion.py
 
 echo "      Silver dimensions..."
-docker exec spark-master /opt/spark/bin/spark-submit \
-    --master spark://spark-master:7077 /jobs/silver_dimensions.py 2>&1 | grep -E "✓|✗|ERROR" || true
+run_spark_job "✓|✗|ERROR" /jobs/silver_dimensions.py
 
 echo "      Gold facts..."
-docker exec spark-master /opt/spark/bin/spark-submit \
-    --master spark://spark-master:7077 /jobs/gold_facts.py 2>&1 | grep -E "✓|✗|ERROR" || true
+run_spark_job "✓|✗|ERROR" /jobs/gold_facts.py
 
 echo "      Data quality..."
-docker exec spark-master /opt/spark/bin/spark-submit \
-    --master spark://spark-master:7077 /jobs/data_quality.py 2>&1 | grep -E "✓|✗|Results" || true
+run_spark_job "✓|✗|Results" /jobs/data_quality.py
+
+echo "      Great Expectations bonus validation..."
+run_spark_job "✓|✗|Results|Suite|Validation" /jobs/great_expectations_validation.py
+
+echo "      DataHub lineage bonus..."
+run_spark_job "Lineage|Jobs|Tables|MCPs|WARNING" /jobs/emit_datahub_lineage.py
 
 echo "      Building dashboard..."
-docker exec spark-master /opt/spark/bin/spark-submit \
-    --master spark://spark-master:7077 /jobs/build_dashboard.py 2>&1 | grep -E "✓|Revenue|Orders|Conversion" || true
+run_spark_job "✓|Revenue|Orders|Conversion" /jobs/build_dashboard.py
 
 echo ""
 echo "========================================"
@@ -80,6 +107,8 @@ echo "  • Airflow UI  : http://localhost:8085  (admin / admin)"
 echo "  • Spark UI    : http://localhost:8080"
 echo "  • MinIO       : http://localhost:9001  (minioadmin / minioadmin)"
 echo "  • Dashboard   : processing/jobs/dashboard.html"
+echo "  • GE report   : processing/jobs/great_expectations_validation_result.json"
+echo "  • DataHub JSON: processing/jobs/datahub_lineage.json"
 echo ""
 echo "  To trigger another pipeline run via Airflow:"
 echo "  1. Go to http://localhost:8085"
