@@ -11,8 +11,8 @@ End-to-end data engineering pipeline built with Apache Spark, Apache Iceberg, Mi
 | [Setup Guide](../README.md) | Prerequisites, one-command startup, manual steps, service URLs |
 | [Components](components.md) | What each service does and why it was chosen |
 | [Data Quality Checks](data_quality.md) | All 14 DQ checks across Bronze, Silver, and Gold layers |
-| [Architecture](../docs/architecture.md) | System architecture, services, ports, storage layout |
-| [Data Model](../docs/data_model.md) | Full table schemas for all 10 Iceberg tables |
+| [Architecture diagram](diagrams/architecture.jpeg) | System architecture — three Docker stacks and how they connect |
+| [Data Model diagram](diagrams/data-model.png) | Full ERD for all 10 Iceberg tables |
 | [Data Dictionary](../README_DATA_DICTIONARY.md) | Column-level descriptions for all source CSV files |
 
 ---

@@ -49,7 +49,7 @@ Three independent Docker Compose stacks share a single Docker bridge network (`l
 | Streaming | `streaming/` | Zookeeper · Kafka · Python event producer |
 | Orchestration | `orchestration/` | Postgres · Airflow webserver + scheduler |
 
-See [`docs/architecture.md`](docs/architecture.md) for diagrams and [`docs/data_model.md`](docs/data_model.md) for full table schemas.
+See [`documentation/`](documentation/) for architecture diagrams, component descriptions, data model, and data quality checks.
 
 ---
 
@@ -306,9 +306,11 @@ cd ../orchestration && docker compose down -v
 │   └── dags/
 │       ├── batch_pipeline.py     # Daily ETL DAG
 │       └── streaming_pipeline.py # Hourly streaming health DAG
-├── docs/
-│   ├── architecture.md           # Architecture diagrams (Mermaid)
-│   └── data_model.md             # Full schema + ERD (Mermaid)
+├── documentation/
+│   ├── README.md                 # Doc index + pipeline overview
+│   ├── components.md             # Component and job descriptions
+│   ├── data_quality.md           # All DQ checks catalog
+│   └── diagrams/                 # Architecture, data model, pipeline PNGs
 ├── README.md
 ├── README_DATA_DICTIONARY.md
 ├── amazon_orders_late_arrivals.csv
