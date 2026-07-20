@@ -1,0 +1,836 @@
+{
+  "generated_at": "2026-07-20T15:22:15.232278+00:00",
+  "datahub_gms_url": null,
+  "datasets": {
+    "demo.bronze.orders": {
+      "urn": "urn:li:dataset:(urn:li:dataPlatform:iceberg,demo.bronze.orders,PROD)",
+      "row_count": 30000,
+      "columns": [
+        {
+          "name": "order_id",
+          "type": "string"
+        },
+        {
+          "name": "event_time",
+          "type": "timestamp"
+        },
+        {
+          "name": "arrival_time",
+          "type": "timestamp"
+        },
+        {
+          "name": "customer_id",
+          "type": "string"
+        },
+        {
+          "name": "product_id",
+          "type": "string"
+        },
+        {
+          "name": "quantity",
+          "type": "int"
+        },
+        {
+          "name": "unit_price",
+          "type": "double"
+        },
+        {
+          "name": "discount_amount",
+          "type": "double"
+        },
+        {
+          "name": "shipping_fee",
+          "type": "double"
+        },
+        {
+          "name": "payment_status",
+          "type": "string"
+        },
+        {
+          "name": "shipping_status",
+          "type": "string"
+        },
+        {
+          "name": "warehouse_id",
+          "type": "string"
+        },
+        {
+          "name": "delivery_partner",
+          "type": "string"
+        },
+        {
+          "name": "late_arrival_flag",
+          "type": "boolean"
+        },
+        {
+          "name": "source_system",
+          "type": "string"
+        },
+        {
+          "name": "total_amount",
+          "type": "double"
+        }
+      ]
+    },
+    "demo.bronze.product_catalog": {
+      "urn": "urn:li:dataset:(urn:li:dataPlatform:iceberg,demo.bronze.product_catalog,PROD)",
+      "row_count": 12000,
+      "columns": [
+        {
+          "name": "product_id",
+          "type": "string"
+        },
+        {
+          "name": "product_name",
+          "type": "string"
+        },
+        {
+          "name": "category",
+          "type": "string"
+        },
+        {
+          "name": "subcategory",
+          "type": "string"
+        },
+        {
+          "name": "brand",
+          "type": "string"
+        },
+        {
+          "name": "seller_id",
+          "type": "string"
+        },
+        {
+          "name": "launch_date",
+          "type": "date"
+        },
+        {
+          "name": "base_price",
+          "type": "double"
+        },
+        {
+          "name": "warehouse_id",
+          "type": "string"
+        },
+        {
+          "name": "is_active",
+          "type": "boolean"
+        },
+        {
+          "name": "weight_kg",
+          "type": "double"
+        },
+        {
+          "name": "product_rating_initial",
+          "type": "double"
+        }
+      ]
+    },
+    "demo.bronze.product_pricing": {
+      "urn": "urn:li:dataset:(urn:li:dataPlatform:iceberg,demo.bronze.product_pricing,PROD)",
+      "row_count": 41922,
+      "columns": [
+        {
+          "name": "pricing_sk",
+          "type": "string"
+        },
+        {
+          "name": "product_id",
+          "type": "string"
+        },
+        {
+          "name": "seller_id",
+          "type": "string"
+        },
+        {
+          "name": "category",
+          "type": "string"
+        },
+        {
+          "name": "list_price",
+          "type": "double"
+        },
+        {
+          "name": "discount_pct",
+          "type": "double"
+        },
+        {
+          "name": "final_price",
+          "type": "double"
+        },
+        {
+          "name": "currency",
+          "type": "string"
+        },
+        {
+          "name": "effective_from",
+          "type": "date"
+        },
+        {
+          "name": "effective_to",
+          "type": "date"
+        },
+        {
+          "name": "is_current",
+          "type": "boolean"
+        },
+        {
+          "name": "change_reason",
+          "type": "string"
+        }
+      ]
+    },
+    "demo.bronze.reviews": {
+      "urn": "urn:li:dataset:(urn:li:dataPlatform:iceberg,demo.bronze.reviews,PROD)",
+      "row_count": 25000,
+      "columns": [
+        {
+          "name": "review_id",
+          "type": "string"
+        },
+        {
+          "name": "review_time",
+          "type": "timestamp"
+        },
+        {
+          "name": "customer_id",
+          "type": "string"
+        },
+        {
+          "name": "product_id",
+          "type": "string"
+        },
+        {
+          "name": "rating",
+          "type": "int"
+        },
+        {
+          "name": "review_title",
+          "type": "string"
+        },
+        {
+          "name": "verified_purchase",
+          "type": "boolean"
+        },
+        {
+          "name": "helpful_votes",
+          "type": "int"
+        },
+        {
+          "name": "sentiment_score",
+          "type": "double"
+        },
+        {
+          "name": "source_file_date",
+          "type": "date"
+        },
+        {
+          "name": "batch_loaded_at",
+          "type": "timestamp"
+        }
+      ]
+    },
+    "demo.bronze.user_events": {
+      "urn": "urn:li:dataset:(urn:li:dataPlatform:iceberg,demo.bronze.user_events,PROD)",
+      "row_count": 75000,
+      "columns": [
+        {
+          "name": "event_id",
+          "type": "string"
+        },
+        {
+          "name": "event_time",
+          "type": "timestamp"
+        },
+        {
+          "name": "customer_id",
+          "type": "string"
+        },
+        {
+          "name": "session_id",
+          "type": "string"
+        },
+        {
+          "name": "event_type",
+          "type": "string"
+        },
+        {
+          "name": "product_id",
+          "type": "string"
+        },
+        {
+          "name": "device_type",
+          "type": "string"
+        },
+        {
+          "name": "traffic_channel",
+          "type": "string"
+        },
+        {
+          "name": "region",
+          "type": "string"
+        },
+        {
+          "name": "quantity",
+          "type": "int"
+        },
+        {
+          "name": "user_agent_family",
+          "type": "string"
+        },
+        {
+          "name": "ingestion_time",
+          "type": "timestamp"
+        }
+      ]
+    },
+    "demo.bronze.user_events_stream": {
+      "urn": "urn:li:dataset:(urn:li:dataPlatform:iceberg,demo.bronze.user_events_stream,PROD)",
+      "row_count": 75000,
+      "columns": [
+        {
+          "name": "event_id",
+          "type": "string"
+        },
+        {
+          "name": "event_date",
+          "type": "date"
+        },
+        {
+          "name": "event_time",
+          "type": "timestamp"
+        },
+        {
+          "name": "ingestion_time",
+          "type": "timestamp"
+        },
+        {
+          "name": "ingestion_lag_minutes",
+          "type": "double"
+        },
+        {
+          "name": "is_late_arrival",
+          "type": "boolean"
+        },
+        {
+          "name": "stream_loaded_at",
+          "type": "timestamp"
+        },
+        {
+          "name": "customer_id",
+          "type": "string"
+        },
+        {
+          "name": "session_id",
+          "type": "string"
+        },
+        {
+          "name": "event_type",
+          "type": "string"
+        },
+        {
+          "name": "product_id",
+          "type": "string"
+        },
+        {
+          "name": "device_type",
+          "type": "string"
+        },
+        {
+          "name": "traffic_channel",
+          "type": "string"
+        },
+        {
+          "name": "region",
+          "type": "string"
+        },
+        {
+          "name": "quantity",
+          "type": "int"
+        },
+        {
+          "name": "user_agent_family",
+          "type": "string"
+        }
+      ]
+    },
+    "demo.silver.dim_product": {
+      "urn": "urn:li:dataset:(urn:li:dataPlatform:iceberg,demo.silver.dim_product,PROD)",
+      "row_count": 12000,
+      "columns": [
+        {
+          "name": "product_id",
+          "type": "string"
+        },
+        {
+          "name": "product_name",
+          "type": "string"
+        },
+        {
+          "name": "category",
+          "type": "string"
+        },
+        {
+          "name": "subcategory",
+          "type": "string"
+        },
+        {
+          "name": "brand",
+          "type": "string"
+        },
+        {
+          "name": "seller_id",
+          "type": "string"
+        },
+        {
+          "name": "launch_date",
+          "type": "date"
+        },
+        {
+          "name": "base_price",
+          "type": "double"
+        },
+        {
+          "name": "price_tier",
+          "type": "string"
+        },
+        {
+          "name": "days_on_market",
+          "type": "int"
+        },
+        {
+          "name": "warehouse_id",
+          "type": "string"
+        },
+        {
+          "name": "is_active",
+          "type": "boolean"
+        },
+        {
+          "name": "weight_kg",
+          "type": "double"
+        },
+        {
+          "name": "product_rating_initial",
+          "type": "double"
+        }
+      ]
+    },
+    "demo.silver.dim_product_pricing_scd": {
+      "urn": "urn:li:dataset:(urn:li:dataPlatform:iceberg,demo.silver.dim_product_pricing_scd,PROD)",
+      "row_count": 41922,
+      "columns": [
+        {
+          "name": "pricing_sk",
+          "type": "string"
+        },
+        {
+          "name": "product_id",
+          "type": "string"
+        },
+        {
+          "name": "seller_id",
+          "type": "string"
+        },
+        {
+          "name": "category",
+          "type": "string"
+        },
+        {
+          "name": "list_price",
+          "type": "double"
+        },
+        {
+          "name": "discount_pct",
+          "type": "double"
+        },
+        {
+          "name": "discount_amount",
+          "type": "double"
+        },
+        {
+          "name": "final_price",
+          "type": "double"
+        },
+        {
+          "name": "currency",
+          "type": "string"
+        },
+        {
+          "name": "effective_from",
+          "type": "date"
+        },
+        {
+          "name": "effective_to",
+          "type": "date"
+        },
+        {
+          "name": "is_current",
+          "type": "boolean"
+        },
+        {
+          "name": "change_reason",
+          "type": "string"
+        }
+      ]
+    },
+    "demo.gold.fact_orders": {
+      "urn": "urn:li:dataset:(urn:li:dataPlatform:iceberg,demo.gold.fact_orders,PROD)",
+      "row_count": 30000,
+      "columns": [
+        {
+          "name": "order_id",
+          "type": "string"
+        },
+        {
+          "name": "order_date",
+          "type": "date"
+        },
+        {
+          "name": "event_time",
+          "type": "timestamp"
+        },
+        {
+          "name": "arrival_time",
+          "type": "timestamp"
+        },
+        {
+          "name": "arrival_lag_hours",
+          "type": "double"
+        },
+        {
+          "name": "customer_id",
+          "type": "string"
+        },
+        {
+          "name": "product_id",
+          "type": "string"
+        },
+        {
+          "name": "category",
+          "type": "string"
+        },
+        {
+          "name": "subcategory",
+          "type": "string"
+        },
+        {
+          "name": "brand",
+          "type": "string"
+        },
+        {
+          "name": "price_tier",
+          "type": "string"
+        },
+        {
+          "name": "quantity",
+          "type": "int"
+        },
+        {
+          "name": "unit_price",
+          "type": "double"
+        },
+        {
+          "name": "discount_amount",
+          "type": "double"
+        },
+        {
+          "name": "shipping_fee",
+          "type": "double"
+        },
+        {
+          "name": "total_amount",
+          "type": "double"
+        },
+        {
+          "name": "payment_status",
+          "type": "string"
+        },
+        {
+          "name": "shipping_status",
+          "type": "string"
+        },
+        {
+          "name": "warehouse_id",
+          "type": "string"
+        },
+        {
+          "name": "delivery_partner",
+          "type": "string"
+        },
+        {
+          "name": "late_arrival_flag",
+          "type": "boolean"
+        },
+        {
+          "name": "source_system",
+          "type": "string"
+        }
+      ]
+    },
+    "demo.gold.fact_user_events": {
+      "urn": "urn:li:dataset:(urn:li:dataPlatform:iceberg,demo.gold.fact_user_events,PROD)",
+      "row_count": 75000,
+      "columns": [
+        {
+          "name": "event_id",
+          "type": "string"
+        },
+        {
+          "name": "event_date",
+          "type": "date"
+        },
+        {
+          "name": "event_time",
+          "type": "timestamp"
+        },
+        {
+          "name": "ingestion_time",
+          "type": "timestamp"
+        },
+        {
+          "name": "ingestion_lag_minutes",
+          "type": "double"
+        },
+        {
+          "name": "customer_id",
+          "type": "string"
+        },
+        {
+          "name": "session_id",
+          "type": "string"
+        },
+        {
+          "name": "event_type",
+          "type": "string"
+        },
+        {
+          "name": "product_id",
+          "type": "string"
+        },
+        {
+          "name": "device_type",
+          "type": "string"
+        },
+        {
+          "name": "traffic_channel",
+          "type": "string"
+        },
+        {
+          "name": "region",
+          "type": "string"
+        },
+        {
+          "name": "quantity",
+          "type": "int"
+        },
+        {
+          "name": "user_agent_family",
+          "type": "string"
+        }
+      ]
+    },
+    "demo.gold.ecommerce_summary": {
+      "urn": "urn:li:dataset:(urn:li:dataPlatform:iceberg,demo.gold.ecommerce_summary,PROD)",
+      "row_count": 66261,
+      "columns": [
+        {
+          "name": "summary_date",
+          "type": "date"
+        },
+        {
+          "name": "category",
+          "type": "string"
+        },
+        {
+          "name": "subcategory",
+          "type": "string"
+        },
+        {
+          "name": "brand",
+          "type": "string"
+        },
+        {
+          "name": "shipping_status",
+          "type": "string"
+        },
+        {
+          "name": "traffic_channel",
+          "type": "string"
+        },
+        {
+          "name": "device_type",
+          "type": "string"
+        },
+        {
+          "name": "event_type",
+          "type": "string"
+        },
+        {
+          "name": "orders",
+          "type": "bigint"
+        },
+        {
+          "name": "units_sold",
+          "type": "bigint"
+        },
+        {
+          "name": "gross_revenue",
+          "type": "double"
+        },
+        {
+          "name": "avg_order_value",
+          "type": "double"
+        },
+        {
+          "name": "avg_arrival_lag_hours",
+          "type": "double"
+        },
+        {
+          "name": "event_count",
+          "type": "bigint"
+        },
+        {
+          "name": "sessions",
+          "type": "bigint"
+        },
+        {
+          "name": "reviews",
+          "type": "bigint"
+        },
+        {
+          "name": "avg_rating",
+          "type": "double"
+        }
+      ]
+    },
+    "demo.gold.ml_session_conversion": {
+      "urn": "urn:li:dataset:(urn:li:dataPlatform:iceberg,demo.gold.ml_session_conversion,PROD)",
+      "row_count": 75000,
+      "columns": [
+        {
+          "name": "session_id",
+          "type": "string"
+        },
+        {
+          "name": "customer_id",
+          "type": "string"
+        },
+        {
+          "name": "device_type",
+          "type": "string"
+        },
+        {
+          "name": "traffic_channel",
+          "type": "string"
+        },
+        {
+          "name": "region",
+          "type": "string"
+        },
+        {
+          "name": "total_events",
+          "type": "bigint"
+        },
+        {
+          "name": "page_views",
+          "type": "bigint"
+        },
+        {
+          "name": "product_views",
+          "type": "bigint"
+        },
+        {
+          "name": "add_to_cart",
+          "type": "bigint"
+        },
+        {
+          "name": "remove_from_cart",
+          "type": "bigint"
+        },
+        {
+          "name": "searches",
+          "type": "bigint"
+        },
+        {
+          "name": "checkout_starts",
+          "type": "bigint"
+        },
+        {
+          "name": "purchase_clicks",
+          "type": "bigint"
+        },
+        {
+          "name": "session_duration_minutes",
+          "type": "double"
+        },
+        {
+          "name": "distinct_products_viewed",
+          "type": "bigint"
+        },
+        {
+          "name": "session_date",
+          "type": "date"
+        },
+        {
+          "name": "converted",
+          "type": "int"
+        }
+      ]
+    }
+  },
+  "jobs": {
+    "bronze_ingestion": {
+      "urn": "urn:li:dataJob:(urn:li:dataFlow:(airflow,batch_pipeline,prod),bronze_ingestion)",
+      "inputs": [
+        "urn:li:dataset:(urn:li:dataPlatform:file,amazon_orders_late_arrivals,PROD)",
+        "urn:li:dataset:(urn:li:dataPlatform:file,amazon_product_catalog_static_dimension,PROD)",
+        "urn:li:dataset:(urn:li:dataPlatform:file,amazon_product_pricing_scd_type2,PROD)",
+        "urn:li:dataset:(urn:li:dataPlatform:file,amazon_reviews_batch_api,PROD)",
+        "urn:li:dataset:(urn:li:dataPlatform:file,amazon_user_activity_streaming_events,PROD)"
+      ],
+      "outputs": [
+        "urn:li:dataset:(urn:li:dataPlatform:iceberg,demo.bronze.orders,PROD)",
+        "urn:li:dataset:(urn:li:dataPlatform:iceberg,demo.bronze.product_catalog,PROD)",
+        "urn:li:dataset:(urn:li:dataPlatform:iceberg,demo.bronze.product_pricing,PROD)",
+        "urn:li:dataset:(urn:li:dataPlatform:iceberg,demo.bronze.reviews,PROD)",
+        "urn:li:dataset:(urn:li:dataPlatform:iceberg,demo.bronze.user_events,PROD)"
+      ]
+    },
+    "streaming_consumer": {
+      "urn": "urn:li:dataJob:(urn:li:dataFlow:(airflow,batch_pipeline,prod),streaming_consumer)",
+      "inputs": [
+        "urn:li:dataset:(urn:li:dataPlatform:kafka,user_events,PROD)"
+      ],
+      "outputs": [
+        "urn:li:dataset:(urn:li:dataPlatform:iceberg,demo.bronze.user_events_stream,PROD)"
+      ]
+    },
+    "silver_dimensions": {
+      "urn": "urn:li:dataJob:(urn:li:dataFlow:(airflow,batch_pipeline,prod),silver_dimensions)",
+      "inputs": [
+        "urn:li:dataset:(urn:li:dataPlatform:iceberg,demo.bronze.product_catalog,PROD)",
+        "urn:li:dataset:(urn:li:dataPlatform:iceberg,demo.bronze.product_pricing,PROD)"
+      ],
+      "outputs": [
+        "urn:li:dataset:(urn:li:dataPlatform:iceberg,demo.silver.dim_product,PROD)",
+        "urn:li:dataset:(urn:li:dataPlatform:iceberg,demo.silver.dim_product_pricing_scd,PROD)"
+      ]
+    },
+    "gold_facts": {
+      "urn": "urn:li:dataJob:(urn:li:dataFlow:(airflow,batch_pipeline,prod),gold_facts)",
+      "inputs": [
+        "urn:li:dataset:(urn:li:dataPlatform:iceberg,demo.bronze.orders,PROD)",
+        "urn:li:dataset:(urn:li:dataPlatform:iceberg,demo.bronze.user_events,PROD)",
+        "urn:li:dataset:(urn:li:dataPlatform:iceberg,demo.bronze.reviews,PROD)",
+        "urn:li:dataset:(urn:li:dataPlatform:iceberg,demo.silver.dim_product,PROD)"
+      ],
+      "outputs": [
+        "urn:li:dataset:(urn:li:dataPlatform:iceberg,demo.gold.fact_orders,PROD)",
+        "urn:li:dataset:(urn:li:dataPlatform:iceberg,demo.gold.fact_user_events,PROD)",
+        "urn:li:dataset:(urn:li:dataPlatform:iceberg,demo.gold.ecommerce_summary,PROD)",
+        "urn:li:dataset:(urn:li:dataPlatform:iceberg,demo.gold.ml_session_conversion,PROD)"
+      ]
+    }
+  }
+}
