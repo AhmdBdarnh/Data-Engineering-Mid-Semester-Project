@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-12T15:59:54.296998+00:00",
+  "generated_at": "2026-07-20T19:04:26.122146+00:00",
   "datahub_gms_url": null,
   "datasets": {
     "demo.bronze.orders": {
@@ -286,7 +286,73 @@
     },
     "demo.bronze.user_events_stream": {
       "urn": "urn:li:dataset:(urn:li:dataPlatform:iceberg,demo.bronze.user_events_stream,PROD)",
-      "error": "[TABLE_OR_VIEW_NOT_FOUND] The table or view `demo`.`bronze`.`user_events_stream` cannot be found. Verify the spelling and correctness of the schema and catalog.\nIf you did not qualify the name with a schema, verify the current_schema() output, or qualify the name with the correct schema and catalog.\nTo tolerate the error on drop use DROP VIEW IF EXISTS or DROP TABLE IF EXISTS.;\n'UnresolvedRelation [demo, bronze, user_events_stream], [], false\n"
+      "row_count": 15758,
+      "columns": [
+        {
+          "name": "event_id",
+          "type": "string"
+        },
+        {
+          "name": "event_date",
+          "type": "date"
+        },
+        {
+          "name": "event_time",
+          "type": "timestamp"
+        },
+        {
+          "name": "ingestion_time",
+          "type": "timestamp"
+        },
+        {
+          "name": "ingestion_lag_minutes",
+          "type": "double"
+        },
+        {
+          "name": "is_late_arrival",
+          "type": "boolean"
+        },
+        {
+          "name": "stream_loaded_at",
+          "type": "timestamp"
+        },
+        {
+          "name": "customer_id",
+          "type": "string"
+        },
+        {
+          "name": "session_id",
+          "type": "string"
+        },
+        {
+          "name": "event_type",
+          "type": "string"
+        },
+        {
+          "name": "product_id",
+          "type": "string"
+        },
+        {
+          "name": "device_type",
+          "type": "string"
+        },
+        {
+          "name": "traffic_channel",
+          "type": "string"
+        },
+        {
+          "name": "region",
+          "type": "string"
+        },
+        {
+          "name": "quantity",
+          "type": "int"
+        },
+        {
+          "name": "user_agent_family",
+          "type": "string"
+        }
+      ]
     },
     "demo.silver.dim_product": {
       "urn": "urn:li:dataset:(urn:li:dataPlatform:iceberg,demo.silver.dim_product,PROD)",
