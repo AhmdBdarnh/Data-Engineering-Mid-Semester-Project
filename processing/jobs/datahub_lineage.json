@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-20T15:22:15.232278+00:00",
+  "generated_at": "2026-07-20T17:18:28.320677+00:00",
   "datahub_gms_url": null,
   "datasets": {
     "demo.bronze.orders": {
@@ -286,7 +286,7 @@
     },
     "demo.bronze.user_events_stream": {
       "urn": "urn:li:dataset:(urn:li:dataPlatform:iceberg,demo.bronze.user_events_stream,PROD)",
-      "row_count": 75000,
+      "row_count": 6398,
       "columns": [
         {
           "name": "event_id",

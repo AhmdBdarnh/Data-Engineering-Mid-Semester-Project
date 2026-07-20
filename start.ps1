@@ -46,22 +46,17 @@ function Invoke-DagAndWait($DagId) {
     $runId = "dockerstart_$([int][double]::Parse((Get-Date -UFormat %s)))_$DagId"
     docker exec airflow-webserver airflow dags trigger $DagId --run-id $runId | Out-Null
 
-    Write-Host "      Triggered '$DagId' (run_id=$runId) via Airflow — waiting for completion..."
+    Write-Host "      Triggered '$DagId' (run_id=$runId) via Airflow - waiting for completion..."
     $elapsed = 0
     while ($true) {
-        $pyScript = @"
-from airflow.models import DagRun
-runs = DagRun.find(dag_id='$DagId', run_id='$runId')
-print(runs[0].state if runs else 'missing')
-"@
-        $state = (docker exec airflow-webserver python3 -c $pyScript 2>$null).Trim()
+        $state = (docker exec airflow-webserver python3 /opt/airflow/dags/check_dag_state.py $DagId $runId 2>$null).Trim()
 
         if ($state -eq "success") {
             Write-Host "      $DagId succeeded" -ForegroundColor Green
             return
         }
         if ($state -eq "failed") {
-            Write-Error "$DagId FAILED — check http://localhost:8085 for task logs"
+            Write-Error "$DagId FAILED - check http://localhost:8085 for task logs"
             exit 1
         }
 

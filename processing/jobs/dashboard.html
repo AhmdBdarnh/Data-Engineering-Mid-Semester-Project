@@ -169,24 +169,24 @@ main { padding: 24px 36px; }
   <div class="row2">
     <div class="card">
       <h2>Real-Time Stream Activity: Kafka &rarr; Bronze &rarr; Silver &rarr; Gold</h2>
-      <canvas id='streamChart' height='105'></canvas>
+      <p style='color:#6b7280;font-size:13px;'>No streaming data yet — start the streaming stack and trigger the <code>streaming_pipeline</code> Airflow DAG, then re-run this job.</p>
     </div>
     <div class="card">
       <h2>Stream KPIs</h2>
       <div class="kpis" style="grid-template-columns: repeat(3, 1fr);">
         <div class="kpi">
           <div class="label">Streamed Events</div>
-          <div class="value">75,000</div>
+          <div class="value">0</div>
           <div class="sub">via Kafka -&gt; Iceberg</div>
         </div>
         <div class="kpi">
           <div class="label">Streamed Sessions</div>
-          <div class="value">75,000</div>
+          <div class="value">0</div>
           <div class="sub">distinct session_id</div>
         </div>
         <div class="kpi amber">
           <div class="label">Late Arrivals</div>
-          <div class="value">0.0%</div>
+          <div class="value">0%</div>
           <div class="sub">0 events &gt; 60 min lag</div>
         </div>
       </div>
@@ -211,8 +211,8 @@ const funnelCounts = [18809, 9069, 4455];
 const channelLabels = ["affiliate", "direct", "organic", "paid_search", "social", "email"];
 const channelRates = [6.4, 6.1, 6.0, 6.0, 5.9, 5.2];
 const channelSessions = [6707, 11141, 24185, 13509, 10461, 8997];
-const streamTypeLabels = ["page_view", "product_view", "search", "add_to_cart", "checkout_start", "purchase_click"];
-const streamTypeCounts = [21023, 18809, 12663, 9069, 5981, 4455];
+const streamTypeLabels = [];
+const streamTypeCounts = [];
 
 new Chart(document.getElementById('trendChart'), {
   type: 'line',
