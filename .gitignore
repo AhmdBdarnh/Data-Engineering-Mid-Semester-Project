@@ -3,6 +3,12 @@
 __pycache__/
 *.pyc
 
+# Claude Code local settings/state - not part of the project deliverable
+.claude/
+
+# Session-generated analysis doc - not part of the project deliverable
+EXPLAIN_THE_CODE.md
+
 # Generated demo output. The script recreates these.
 midsemester_demo/demo_outputs/*.sqlite
 midsemester_demo/demo_outputs/*.sqlite-*
