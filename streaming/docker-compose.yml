@@ -7,6 +7,11 @@ services:
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "2181"]
+      interval: 5s
+      timeout: 5s
+      retries: 15
     networks:
       - lakehouse
 
@@ -15,7 +20,8 @@ services:
     image: confluentinc/cp-kafka:7.5.0
     container_name: kafka
     depends_on:
-      - zookeeper
+      zookeeper:
+        condition: service_healthy
     ports:
       - "29092:29092"   # host-accessible Kafka endpoint → localhost:29092
     environment:
