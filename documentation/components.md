@@ -106,7 +106,7 @@ Joins Bronze and Silver tables to build four analytics-ready tables:
 ---
 
 ### `data_quality.py`
-Runs 14 named checks across all three layers after the Gold build. Prints a pass/fail result for each check and exits with code 1 if any check fails, causing the Airflow DAG to stop. See [data_quality.md](data_quality.md) for the full check catalog.
+Runs 20 named checks across all three layers after the Gold build. Prints a pass/fail result for each check and exits with code 1 if any check fails, causing the Airflow DAG to stop. See [data_quality.md](data_quality.md) for the full check catalog.
 
 ---
 
