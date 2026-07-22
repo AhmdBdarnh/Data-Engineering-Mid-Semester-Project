@@ -1,6 +1,6 @@
 # Amazon-Style eCommerce Synthetic Datasets
 
-These datasets are synthetic and designed for the Data Engineering Mid-Semester Project.
+These datasets are synthetic and designed for the Data Engineering Final Project.
 
 Business: Amazon-style eCommerce Marketplace.
 

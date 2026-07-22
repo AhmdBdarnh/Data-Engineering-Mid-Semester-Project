@@ -333,11 +333,3 @@ All five datasets ship with the repo and are auto-ingested by `bronze_ingestion.
 | `amazon_product_pricing_scd_type2.csv` | Price history (SCD Type 2) | Batch → Bronze → Silver (SCD-2) |
 | `amazon_reviews_batch_api.csv` | Customer reviews | Batch → Bronze |
 | `amazon_user_activity_streaming_events.csv` | User clickstream | Batch snapshot + Kafka stream |
-
-## Mid-semester demo
-
-The original mid-semester demo (SQLite + HTML dashboard, no Docker) is preserved in `midsemester_demo/`. Run it with:
-
-```powershell
-python .\midsemester_demo\build_midsemester_demo.py
-```
